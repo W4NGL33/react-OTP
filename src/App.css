@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,69 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+.header-color{
+  background-color: #369c52;
+  font-size: medium;
+  color: white;
+
 }
+
+.navbar-color{
+  background-color: #369c52;
+  color: white;
+}
+
+.searchbox{
+  height: 50px;
+  width: 300px;
+  background-color: white;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.searchbox > form > input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: large;
+  height: 35px;
+  width: 270px;
+  padding-right: 20px;
+
+}
+
+.searchicon{
+  color: #369c52;
+}
+
+.header-color > nav-link{
+color: aliceblue;
+}
+
+#basic-nav-dropdown{
+  color: aliceblue;
+  font-size: 20px;
+  padding-top: 15px;
+}
+
+#basic-nav-dropdown .item  {
+background-color: #369c52;
+color: aliceblue;
+}
+
+.footer-area{
+  background-color:#369c52;
+  color: aliceblue;
+}
+
+.link {
+  color: aliceblue;
+}
+
+hr {
+  background-color:white; height: 1px; border: 0; 
+}
+
