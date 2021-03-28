@@ -3,26 +3,86 @@ import './App.css';
 // import FontAwesome from 'react-fontawesome'
 import logo1 from './component/images/Nigerian-Coat-of-Arm.png'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
-import {MDBIcon, MDBCol} from 'mdbreact';
-import {FaSearch} from 'react-icons/fa';
+import React, { Component } from 'react'
+import axios from "axios";
+
+import { MDBIcon, MDBCol } from 'mdbreact';
+import { FaSearch } from 'react-icons/fa';
 import Footer from './component/Footer'
 // import DatePicker from './component/DatePicker'
 // import Slider from './component/Slider'
 import Slide1 from './component/images/1.jpg'
 import Slide2 from './component/images/percentage-2.2.jpg'
-import {Navbar, NavDropdown, Nav, Form, FormControl, Button, Container, Row, Col, Modal, ListGroup, Carousel} from 'react-bootstrap';
+import { Navbar, NavDropdown, Nav, Form, FormControl, Button, Container, Row, Col, Modal, ListGroup, Carousel } from 'react-bootstrap';
 
-function App() {
+export default class App extends Component {
 
-  // function Example() {
-    const [show, setShow] = useState(false);
-  
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+  state = {
+    show: false,
+    showOrganization: false,
+    showDate: false,
+    organizationList: [{id: 1, name: "Organization 1"},{id: 1, name: "Organization 2"},{id: 1, name: "Organization 3"}],
+    selectedOrg: "",
+    selectedDate: "",
+    fg: false,
+    mda: false,
+    result: []
+  }
 
-  return (
-    <div className="App">
+  handleShow=()=>{
+    this.setState({show:true})
+  }
+
+
+  handleClose=()=>{
+    this.setState({show:false})
+  }
+
+
+  handleChange = (e) => {
+    const value = e.target.value;
+    this.setState({
+        ...this.state,
+        [e.target.name]: value,
+    });
+};
+
+submitForm=()=>{
+  if(this.state.fg==true){
+    //Check for date
+    if(this.state.selectedDate == ""){
+      alert("Oga pick date bilo")
+      return
+    }
+    //
+    // axios.get("http://localhostere:343/"+this.state.selectedDate).then(res =>{
+      axios.get(`http://localhostere:343/${this.state.selectedDate}`).then(res =>{
+      this.setState({result: res.data})
+    }).catch(err =>{
+
+    })
+
+  }
+  else if(this.state.mda==true){
+        //Check for date and mda
+        if(this.state.selectedDate == "" || this.state.selectedOrg == ""){
+          alert("Oga fill both fields")
+          return
+        }
+        axios.get(`http://localhostere:343/${this.state.selectedOrg}/${this.state.selectedDate}`).then(res =>{
+          this.setState({result: res.data})
+        }).catch(err =>{
+    
+        })
+        
+  }
+
+}
+
+
+  render() {
+    return (
+      <div className = "App" >
       <div className="header-color">
         <Container>
       <Navbar expand="lg" variant="dark" className="navbar-color">
@@ -60,14 +120,14 @@ function App() {
     <Col sm={4}>
     <ListGroup>
   
-  <ListGroup.Item action variant="success"  onClick={handleShow}>
-    Daily Treasury Report
+  <ListGroup.Item action variant="success"  onClick={this.handleShow}>
+                  Daily Treasury Report
   </ListGroup.Item>
-  <ListGroup.Item action variant="success"  onClick={handleShow}>
-  Daily Payment Report
+  <ListGroup.Item action variant="success"  onClick={this.handleShow}>
+                  Daily Payment Report
   </ListGroup.Item>
-  <ListGroup.Item action variant="success"  onClick={handleShow}>
-  Monthly Budget Performance Reports
+  <ListGroup.Item action variant="success"  onClick={this.handleShow}>
+                  Monthly Budget Performance Reports
   </ListGroup.Item>
 
 </ListGroup>
@@ -93,43 +153,54 @@ function App() {
 
   
 
-      {/* Modal starts*/}
+      {/* Modal starts*/ }
 
       <>
-      {/* <Button variant="primary" onClick={handleShow}>
+{/* <Button variant="primary" onClick={handleShow}>
         Launch demo modal
       </Button> */}
 
-      <Modal show={show} onHide={handleClose}>
+  < Modal show = { this.state.show } onHide = { this.handleClose } >
+  <Form onSubmit={this.submitForm}>
         <Modal.Header closeButton>
           <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header>
           <Modal.Body>
-            <Form>
               <Form.Row>
               <Form.Label className="mx-3">Federal Government Total</Form.Label>
-              <Form.Check type="radio" aria-label="Federal Government Total" />
+              <Form.Check name="radio-type" type="radio" aria-label="Federal Government Total" onClick={()=>this.setState({showOrganization: false, showDate: true, fg:true, mda:false})} />
+
               <Form.Label className="mx-3">MDAs</Form.Label>
-              <Form.Check type="radio" aria-label="MDAs" />
+              <Form.Check name="radio-type" type="radio" aria-label="MDAs" onClick={()=>this.setState({showOrganization: true, showDate: true,fg:false, mda:true})} />
               </Form.Row>
 
-              <Form.Row>
-                   <Form.Group as={Col} controlId="formGridState">
-                    <Form.Label>Organization</Form.Label>
-                    <Form.Control as="select" defaultValue="Choose...">
-                      <option>Choose...</option>
-                      <option>...</option>
-                    </Form.Control>
-                  </Form.Group>
-                                    
-                </Form.Row>
+{this.state.showOrganization ? (
+                <Form.Row>
+                <Form.Group as={Col} controlId="formGridState">
+                 <Form.Label>Organization</Form.Label>
+                 <Form.Control as="select" defaultValue="Choose..." name="selectedOrg" onChange={this.handleChange}>
+                   <option>Choose...</option>
+                   {this.state.organizationList.map((item) => (
+                     <option key={item.id} value={item.name}>{item.name}</option>
+                    // <option key={item.id} value={item.id}>
+                    //   {item.title}
+                    // </option>
+                  ))}
+                 </Form.Control>
+               </Form.Group>
+                                 
+             </Form.Row>
+) : null}
 
-            <Form.Row>
+
+{this.state.showDate ? (
+  <Form.Row>
                <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>Select Date</Form.Label>
-                <Form.Control type="date" placeholder="Enter email" />
+                <Form.Control type="date" placeholder="" name="selectedDate" onChange={this.handleChange}  />
               </Form.Group>
-            </Form.Row>
+            </Form.Row>) : null}
+
                    
            
 
@@ -137,32 +208,34 @@ function App() {
                 {/* <Button variant="primary" type="submit">
                   Submit
                 </Button> */}
-              </Form>
               
 
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
+          <Button variant="secondary" onClick={this.handleClose}>
+        Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Submit
+          <Button variant="primary" type="submit">
+        Submit
           </Button>
         </Modal.Footer>
-      </Modal>
+        
+        </Form>
+      </Modal >
     </>
-      {/* Modal ends */}
+  {/* Modal ends */ }
 
-      {/* footer start */}
-      <div className="footer-area">
-        <Container>
-          <Footer />
-         </Container>
+{/* footer start */ }
+<div className="footer-area">
+  <Container>
+    <Footer />
+  </Container>
 
-       </div>
-      {/* footer ends */}
-    </div>
-  );
+</div>
+{/* footer ends */ }
+    </div >
+    )
+  }
+
+
 }
-
-export default App;
