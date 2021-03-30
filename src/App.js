@@ -6,32 +6,45 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { Component } from 'react'
 import axios from "axios";
 
-import { MDBIcon, MDBCol } from 'mdbreact';
+// import { MDBIcon, MDBCol } from 'mdbreact';
 import { FaSearch } from 'react-icons/fa';
 import Footer from './component/Footer'
 // import DatePicker from './component/DatePicker'
 // import Slider from './component/Slider'
 import Slide1 from './component/images/1.jpg'
 import Slide2 from './component/images/percentage-2.2.jpg'
+import Modalz from './component/Modalz'
 import { Navbar, NavDropdown, Nav, Form, FormControl, Button, Container, Row, Col, Modal, ListGroup, Carousel } from 'react-bootstrap';
 
 export default class App extends Component {
-
+  // {id: 1, name: "Organization 1"},{id: 1, name: "Organization 2"},{id: 1, name: "Organization 3"}
   state = {
     show: false,
+    bigShow: false,
     showOrganization: false,
     showDate: false,
     organizationList: [
-      {id: 1, name: "Organization 1"},
-      {id: 2, name: "Organization 2"},
-      {id: 3, name: "Organization 3"}
+      {id: 1, name: "ANAMBRA/ IMO RBDA"},
+          {id: 2, name: "OFFICE OF THE ACCOUNTANT-GENERAL OF THE FEDERATION"},
+          {id: 3, name: "FEDERAL ROAD MAINTENANCE AGENCY"},
+          {id: 4, name: "UPPER NIGER RBDA"},
+          {id: 5, name: "NATIONAL WATER RESOURCES INSTITUTE- KADUNA"},
+          {id: 6, name: "NATIONAL COMMISSION FOR REFUGEES"}
     ],
     selectedOrg: "",
     selectedDate: "",
     fg: false,
     mda: false,
+    showModalTitle: "",
+    lgshow: true,
     result: []
   }
+
+  setShow=(x) => {
+    this.setState({bigShow:x})
+  }
+
+  
 
   handleShow=()=>{
     this.setState({show:true})
@@ -40,6 +53,15 @@ export default class App extends Component {
 
   handleClose=()=>{
     this.setState({show:false})
+  }
+
+  handleBigShow=()=>{
+    this.setState({bigShow:true})
+  }
+
+
+  handleBigClose=()=>{
+    this.setState({bigShow:false})
   }
 
 
@@ -51,7 +73,23 @@ export default class App extends Component {
     });
 };
 
-submitForm=()=>{
+
+// componentDidMount(){
+//    this.getOranization()
+// }
+
+// getOranization = () =>{
+//   axios.get('http://localhost:2040/dailypayment/')
+//     .then((response) => {
+//       this.setState({categories:response.data})
+//         })
+//     .catch( (error) => {
+//       console.log(error);
+//     });
+// }
+
+submitForm=(e)=>{
+  e.preventDefault()
   if(this.state.fg==true){
     //Check for date
     if(this.state.selectedDate == ""){
@@ -60,8 +98,8 @@ submitForm=()=>{
     }
     //
     // axios.get("http://localhostere:343/"+this.state.selectedDate).then(res =>{
-      axios.get(`http://localhostere:343/${this.state.selectedDate}`).then(res =>{
-      this.setState({result: res.data})
+      axios.get(`http://localhost:2040/dailypayment/${this.state.selectedDate}`).then(res =>{
+      this.setState({result: res.data,show:false, bigShow: true})
     }).catch(err =>{
 
     })
@@ -70,10 +108,10 @@ submitForm=()=>{
   else if(this.state.mda==true){
         //Check for date and mda
         if(this.state.selectedDate == "" || this.state.selectedOrg == ""){
-          alert("Oga fill both fields")
+          alert("Please, select an MDA and a date")
           return
         }
-        axios.get(`http://localhostere:343/${this.state.selectedOrg}/${this.state.selectedDate}`).then(res =>{
+        axios.get(`http://localhost:2040/dailypayment/${this.state.selectedOrg}/${this.state.selectedDate}`).then(res =>{
           this.setState({result: res.data})
         }).catch(err =>{
     
@@ -119,12 +157,12 @@ submitForm=()=>{
 
 <div>
 <Container fluid="md">
-  <h2 className="pt-5">REPORTS </h2>
+  <h3 className="pt-5">REPORTS </h3>
   <Row>
     <Col sm={4}>
     <ListGroup>
-  
-  <ListGroup.Item action variant="success"  onClick={this.handleShow}>
+    {/* this.setState({showModalTitle: "Daily Treasury Report" }) */}
+  <ListGroup.Item action variant="success"  onClick={this.handleShow} >
                   Daily Treasury Report
   </ListGroup.Item>
   <ListGroup.Item action variant="success"  onClick={this.handleShow}>
@@ -134,22 +172,21 @@ submitForm=()=>{
                   Monthly Budget Performance Reports
   </ListGroup.Item>
 
-</ListGroup>
+  </ListGroup>
     </Col>
 
     <Col sm={8}>
     <Carousel fade>
-  <Carousel.Item>
-    <img src={Slide1} height="400"/>
-    
-  </Carousel.Item>
-  <Carousel.Item>
-    <img src={Slide2} height="400"/>
-  </Carousel.Item>
-  <Carousel.Item>
-    <img src={Slide1} height="400"/>
-  </Carousel.Item>
-</Carousel>
+      <Carousel.Item>
+        <img src={Slide1} height="400"/>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img src={Slide2} height="400"/>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img src={Slide1} height="400"/>
+      </Carousel.Item>
+    </Carousel>
     </Col>
   </Row>
   </Container>
@@ -160,25 +197,25 @@ submitForm=()=>{
       {/* Modal starts*/ }
 
       <>
-{/* <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button> */}
+{/* <Button variant="primary" onClick={handleShow}>Launch demo modal </Button> */}
 
   < Modal show = { this.state.show } onHide = { this.handleClose } >
   <Form onSubmit={this.submitForm}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>{this.state.showModalTitle}</Modal.Title>
         </Modal.Header>
           <Modal.Body>
               <Form.Row>
               <Form.Label className="mx-3">Federal Government Total</Form.Label>
-              <Form.Check name="radio-type" type="radio" aria-label="Federal Government Total" onClick={()=>this.setState({showOrganization: false, showDate: true, fg:true, mda:false})} />
+              <Form.Check name="radio-type" type="radio" aria-label="Federal Government Total" 
+              onClick={()=>this.setState({showOrganization: false, showDate: true, fg:true, mda:false})} />
 
               <Form.Label className="mx-3">MDAs</Form.Label>
-              <Form.Check name="radio-type" type="radio" aria-label="MDAs" onClick={()=>this.setState({showOrganization: true, showDate: true,fg:false, mda:true})} />
+              <Form.Check name="radio-type" type="radio" aria-label="MDAs" 
+              onClick={()=>this.setState({showOrganization: true, showDate: true,fg:false, mda:true})} />
               </Form.Row>
 
-{this.state.showOrganization ? (
+              {this.state.showOrganization ? (
                 <Form.Row>
                 <Form.Group as={Col} controlId="formGridState">
                  <Form.Label>Organization</Form.Label>
@@ -194,21 +231,17 @@ submitForm=()=>{
                </Form.Group>
                                  
              </Form.Row>
-) : null}
+              ) : null}
 
 
-{this.state.showDate ? (
-  <Form.Row>
+          {this.state.showDate ? (
+            <Form.Row>
                <Form.Group as={Col} controlId="formGridEmail">
                 <Form.Label>Select Date</Form.Label>
                 <Form.Control type="date" placeholder="" name="selectedDate" onChange={this.handleChange}  />
               </Form.Group>
             </Form.Row>) : null}
 
-                   
-           
-
-             
                 {/* <Button variant="primary" type="submit">
                   Submit
                 </Button> */}
@@ -219,15 +252,42 @@ submitForm=()=>{
           <Button variant="secondary" onClick={this.handleClose}>
         Close
           </Button>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" >
         Submit
           </Button>
         </Modal.Footer>
         
         </Form>
       </Modal >
+
+
+
+
+      < Modal show = { this.state.bigShow } onHide = { this.handleBigShow }  size="lg" >
+  <Form onSubmit={this.submitForm}>
+        <Modal.Header closeButton>
+          <Modal.Title>{this.state.showModalTitle}</Modal.Title>
+        </Modal.Header>
+          <Modal.Body>
+           Display table result here<br />
+           Do your map result line here for the table
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.handleBigClose}>
+        Close
+          </Button>
+          <Button variant="primary" type="submit" >
+        Print
+          </Button>
+        </Modal.Footer>
+        
+        </Form>
+      </Modal >
+   
+   
+   
     </>
-  {/* Modal ends */ }
 
 {/* footer start */ }
 <div className="footer-area">
