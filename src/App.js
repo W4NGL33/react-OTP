@@ -21,7 +21,11 @@ export default class App extends Component {
     show: false,
     showOrganization: false,
     showDate: false,
-    organizationList: [{id: 1, name: "Organization 1"},{id: 1, name: "Organization 2"},{id: 1, name: "Organization 3"}],
+    organizationList: [
+      {id: 1, name: "Organization 1"},
+      {id: 2, name: "Organization 2"},
+      {id: 3, name: "Organization 3"}
+    ],
     selectedOrg: "",
     selectedDate: "",
     fg: false,
